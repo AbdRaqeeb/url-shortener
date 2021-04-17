@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { Application, Request, Response } from 'express';
-import cors from 'cors';
+import * as cors from 'cors';
 import sequelize from './database';
 import server from './graphql';
 import urlRouter from './routes/url';
