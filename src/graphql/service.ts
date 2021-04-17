@@ -1,21 +1,14 @@
-import { UserInputError, ValidationError } from 'apollo-server-express';
+import { UserInputError } from 'apollo-server-express';
 import * as validUrl from 'valid-url';
 import { customAlphabet } from 'nanoid';
 import { Url } from '../database/models/Url';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6);
 
-export const validateUrl = (url: string): boolean => {
-  // check url passed in
-  if (typeof url !== 'string') {
-    throw new ValidationError('The input provided is not a string');
-  }
-
+export const validateUrl = (url: string): void => {
   if (!validUrl.isWebUri(url)) {
     throw new UserInputError('The url provided is not valid');
   }
-
-  return true;
 };
 
 export interface shortenUrlFormat {
@@ -53,7 +46,9 @@ export const urlShortener = async (url: string, base_url: string): Promise<short
       url: new_url.short_url,
     };
   } catch (err) {
-    console.log('ERROR: ', err);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('ERROR: ', err);
+    }
     throw new Error(err);
   }
 };
