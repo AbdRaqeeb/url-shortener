@@ -1,4 +1,4 @@
-import { SyntaxError, UserInputError, ValidationError } from 'apollo-server-express';
+import { UserInputError, ValidationError } from 'apollo-server-express';
 import * as validUrl from 'valid-url';
 import { customAlphabet } from 'nanoid';
 import { Url } from '../database/models/Url';
@@ -7,19 +7,12 @@ const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6);
 
 export const validateUrl = (url: string): boolean => {
   // check url passed in
-  if (typeof url !== "string") {
-    throw new ValidationError('The input provided is not a string')
+  if (typeof url !== 'string') {
+    throw new ValidationError('The input provided is not a string');
   }
 
   if (!validUrl.isWebUri(url)) {
     throw new UserInputError('The url provided is not valid');
-  }
-
-  const baseUrl = process.env.BASE_URL;
-
-  // check base url
-  if (!validUrl.isWebUri(baseUrl)) {
-    throw new SyntaxError('Base url format is invalid.');
   }
 
   return true;
@@ -29,7 +22,7 @@ export interface shortenUrlFormat {
   url: string;
 }
 
-export const urlShortener = async (url: string): Promise<shortenUrlFormat> => {
+export const urlShortener = async (url: string, base_url: string): Promise<shortenUrlFormat> => {
   try {
     // validate url
     validateUrl(url);
@@ -48,7 +41,7 @@ export const urlShortener = async (url: string): Promise<shortenUrlFormat> => {
 
     // url code
     const code = nanoid();
-    const short_url = `${process.env.BASE_URL}/${code}`;
+    const short_url = `${base_url}/${code}`;
 
     const new_url = await Url.create({
       short_url,
