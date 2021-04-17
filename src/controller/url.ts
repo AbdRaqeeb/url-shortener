@@ -12,20 +12,18 @@ export const urlLoader = async (req: Request, res: Response): Promise<Response |
     });
 
     if (!url) {
-      return errorResponse(404, res, 'Url not found');
+      return res.status(404).json({
+        error: 'Url not found'
+      })
     }
 
-    return res.redirect(url.long_url);
+    return res.redirect(301, url.long_url);
   } catch (err) {
-    errorResponse(500, res, 'Internal server error', err);
+    if (process.env.NODE_ENV === 'development' || 'production') {
+      console.log('ERROR: ', err);
+    }
+    return res.status(500).json({
+      error: 'Internal server error',
+    });
   }
-};
-
-const errorResponse = (statusCode: number, res: Response, message: string, err?: Error) => {
-  if (err) {
-    console.log('ERROR: ', err);
-  }
-  return res.status(statusCode).json({
-    error: message,
-  });
 };

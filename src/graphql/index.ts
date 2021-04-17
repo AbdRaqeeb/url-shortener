@@ -1,6 +1,6 @@
 import { ApolloServer } from 'apollo-server-express';
 import { Request } from 'express';
-import resolvers from './resolvers';
+import resolvers from './resolver';
 import typeDefs from './type-defs';
 
 interface Context {
