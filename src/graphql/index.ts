@@ -1,25 +1,20 @@
-import { ApolloServer, gql } from 'apollo-server-express';
-import resolvers from './query';
+import { ApolloServer } from 'apollo-server-express';
+import { Request } from 'express';
+import resolvers from './resolvers';
+import typeDefs from './type-defs';
 
-const typeDefs = gql`
-  type UrlObject {
-    id: ID
-    code: String
-    long_url: String
-    short_url: String
-    created_at: String
-    updated_at: String
-  }
+interface Context {
+  req: Request;
+}
 
-  type Url {
-    url: String
-  }
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({ req }: Context) => {
+    const base_url = `${req.protocol}://${req.get('host')}`;
 
-  type Query {
-    shortenUrl(url: String): Url
-  }
-`;
-
-const server = new ApolloServer({ typeDefs, resolvers });
+    return { base_url };
+  },
+});
 
 export default server;
